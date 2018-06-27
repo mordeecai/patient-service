@@ -86,7 +86,7 @@ public class PatientResource {
 	//Temporarily allowing any origins to call the API
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "save", method = RequestMethod.POST, consumes="application/json")
-	public void savePatient(@RequestBody Patient patient) {
+	public Patient savePatient(@RequestBody Patient patient) {
 		try {
 			if(patient.getId() != null) {
 				service.updatePatient(patient);
@@ -96,6 +96,8 @@ public class PatientResource {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
+		
+		return patient;
 	}
 
 	//Temporarily allowing any origins to call the API
