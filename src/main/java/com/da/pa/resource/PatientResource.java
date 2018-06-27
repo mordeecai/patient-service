@@ -38,7 +38,7 @@ public class PatientResource {
 	public List<Patient> getPatientsByQuery(@RequestParam(required=false) String query) {
 		List<Patient> patients = new ArrayList<>();
 		
-		if(query != null) {
+		if(query != null && !"".equals(query.trim())) {
 			patients = service.getPatients(query);
 		} else {
 			patients = service.getPatients();

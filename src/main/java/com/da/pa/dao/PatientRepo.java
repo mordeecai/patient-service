@@ -13,10 +13,10 @@ public interface PatientRepo extends CrudRepository<Patient, Long> {
 	@Query(value = "SELECT p FROM Patient p WHERE p.active = ?1 ORDER BY p.firstName, p.lastName")
 	List<Patient> findByStatus(boolean active);
 	
-	@Query(value = "SELECT p FROM Patient p, Address a WHERE p.id = a.id "
-			+ " AND (p.firstName LIKE %?1% "
-			+ " OR p.lastName LIKE %?1%"
-			+ " OR a.country = ?1)"
+	@Query(value = "SELECT p FROM Patient p LEFT JOIN p.addresses a ON p.id = a.id "
+			+ " WHERE LOWER(p.firstName) LIKE LOWER(CONCAT('%', ?1,'%')) "
+			+ " OR LOWER(p.lastName) LIKE LOWER(CONCAT('%', ?1,'%'))"
+			+ " OR a.country = ?1"
 			+ " ORDER BY p.firstName, p.lastName ASC")
 	List<Patient> findByQueryString(String query);
 	
