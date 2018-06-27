@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import org.apache.log4j.Logger;
 
 import com.da.pa.dao.AddressRepo;
 import com.da.pa.dao.PatientRepo;
@@ -17,6 +17,8 @@ import com.da.pa.service.PatientService;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+	
+	private static final Logger log = Logger.getLogger(PatientServiceImpl.class);
 	
 	@Autowired
 	PatientRepo repo;
@@ -35,32 +37,60 @@ public class PatientServiceImpl implements PatientService {
 
 	@Override
 	public List<Patient> getPatients(String searchQuery) {
+		try {
+			return (List<Patient>) repo.findByQueryString(searchQuery);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
 		
-		return (List<Patient>) repo.findByQueryString(searchQuery);
+		return new ArrayList<Patient>();
 	}
 
 	@Override
-	public void createPatient(Patient patient) {
-		repo.save(patient);
+	public Patient createPatient(Patient patient) {
+		try {
+			return repo.save(patient);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return null;
+		
 	}
 
 	@Override
-	public void updatePatient(Patient patient) {
-		Patient old = getPatientById(patient.getId());
-		List<Address> addresses = old.getAddresses();
-		addresses.forEach(a -> addRepo.delete(a));		
-		repo.save(patient);		
+	public Patient updatePatient(Patient patient) {
+		try {
+			Patient old = getPatientById(patient.getId());
+			List<Address> addresses = old.getAddresses();
+			addresses.forEach(a -> addRepo.delete(a));		
+			return repo.save(patient);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return null;		
 	}
 
 	@Override
 	public void deletePatient(Patient patient) {
-		repo.delete(patient);
+		try {
+			repo.delete(patient);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	@Override
 	public Patient getPatientById(Long id) {
-		Optional<Patient> patient = repo.findById(id); 
-		return (patient.isPresent()) ? patient.get() : null;
+		try {
+			Optional<Patient> patient = repo.findById(id); 
+			return (patient.isPresent()) ? patient.get() : null;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return null;
 	}
 
 }
